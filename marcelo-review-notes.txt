@@ -1,0 +1,158 @@
+1)  source churn_env \Scripts\activate # churn_env /bin/activate  # On macOS & Linux. 
+
+"source churn_env \Scripts\activate" doesn't work on Windows. Should be:
+
+churn_env\Scripts\activate
+
+2) Clone this GitHub repo and install dependencies in your environment.
+
+When I reach this step, I end up with two churn_prediction_app directories.
+
+Instead, can we change the order a bit, to: 1) clone the GitHub repo (using the `git clone` command), then 2) activate the virtual env, and then 3) install the requirements?
+
+3) pip install requirements.txt
+
+It didn't work. I had to include the "-r flag":
+
+pip install -r requirements.txt"
+
+4) please add this line to .gitignore, to instruct Git to ignore the churn_env directory and all its contents:
+
+churn_env/
+
+5) From the repo’s root directory, create a Jupyter Notebook and simply load the data as follows:
+
+Can we add a short paragraph showing the reader how to set up and run the Jupyter Notebook?
+
+6) ```
+Take a moment to examine the distribution of your target variable (churn):
+print("Churn distribution:")
+print(df['Churn Label'].value_counts(normalize=True))
+```
+
+The above paragraph implies that the reader already has those 2 print commands, but you haven't presented the "Churn distribution" part yet.
+
+Should we instruct the reader to run the code snippet you first presented, and then add the 2 print commands above and run the notebook again?
+
+7) The Python script data_preprocessing.py is cleaning and preprocessing your data. Run it in the terminal to generate processed data (processed_telco_data.csv) in the data folder.
+
+It would be nice to provide the command to run the Python script above.
+
+8) To visualize features, run feature_analysis.py in a Jupyter notebook.
+
+When I run it, I'm getting FileNotFoundError: [Errno 2] No such file or directory: 'processed_telco_data.csv'
+
+I had to change:
+
+    df = pd.read_csv('processed_telco_data.csv')
+
+to:
+
+    df = pd.read_csv('data\processed_telco_data.csv')
+
+9) df = df.drop(columns='conversation')
+
+I had to comment out the line above, otherwise I get this error:
+
+KeyError: "['conversation'] not found in axis"
+
+10) Implement the baseline model by running baseline_model.py in the terminal or notebook.
+
+I think we should provide the reader with the command to run the above script in the terminal.
+
+11) You can generate customer sentiments for the dataset by running data_preparation.py. 
+
+Again, I think it would be nice to provide users with the command to run the script above.
+
+12) You can generate customer sentiments for the dataset by running data_preparation.py. 
+
+I'm getting this error:
+
+>Python data_preparation.py
+Traceback (most recent call last):
+  File "C:\CircleCI\Reviews\churn_predictor_app\data_preparation.py", line 270, in <module>
+    processed_df, validation_report = prep.prepare_data()
+                                      ^^^^^^^^^^^^^^^^^^^
+TypeError: DataPreparation.prepare_data() missing 1 required positional argument: 'data'
+
+Just as a workaround, I modified the line above to:
+
+    df = pd.read_csv("./data/Telco_customer_churn_with_text.csv")
+    processed_df, validation_report = prep.prepare_data(df)
+
+and it worked. However, I don't know what should be provided as the argument for prepare_data().
+
+13) 
+```new_df = 
+new_df.to_csv("./data/model_data.csv")
+```
+
+This code gives me the error:
+
+  File "C:\CircleCI\Reviews\churn_predictor_app\generate_model_data.py", line 8  
+    new_df =
+             ^
+SyntaxError: invalid syntax
+
+I removed the line break, and it worked:
+
+new_df = new_df.to_csv("./data/model_data.csv")
+
+14) python -m generate_model_data.py
+
+Gives me the error:
+
+(ModuleNotFoundError: __path__ attribute not found on 'generate_model_data' while trying to find 'generate_model_data.py'). Try using 'generate_model_data' instead of 'generate_model_data.py' as the module name.
+
+So I changed it to :
+python -m generate_model_data
+
+15) You will use Grid search to optimize the hyperparameters for a more accurate model prediction. Here is the model:
+
+```python
+# Define Model
+rf = RandomForestClassifier(random_state=42)
+.
+.
+.
+```
+
+I think we should instruct readers to open the model.py file and find the snippet you highlighted.
+
+16) You will use the prediction_pipeline.py with the fastAPI endpoint.
+
+Again, I think it would be nice to provide the command to run prediction_pipeline.py.
+
+17)
+The output should look like this:
+
+{
+"churn_probability": [0.82],  # Probability of churning
+"churn_prediction": [1]       # 1 indicates likely to churn
+}
+
+Note: running the prediction_pipeline.py doesn't give me any output.
+
+18) The fastAPI package needs a uvicorn server. You already installed these when you were setting up the project.
+
+I'm not seeing the uvicorn installation in the setup section. Is it part of another installation:
+
+19) Define the request body (data sent from the client side to the API) using BaseModel– a pydantic module.
+
+Here, you're instructing the reader to define the CustomerData class. However, this class is already implemented in the main.py file, which is used in the uvicorn right below.
+
+Also, the pydantic's BaseModel is mentioned. It would be nice to provide a short explanation about pydantic and/or BaseModel. 
+
+20) Enter the values and click Execute and you will see the predictions under the response body section. You should get a class response and the probability.
+
+The request is a bit complex, so it would be great to provide users with a sample request body. I'm getting this error:
+
+{
+  "error": "An unexpected error occurred: \"['Unnamed: 0'] not in index\""
+}
+
+21) DOCKER_USERNAME: Your Docker Hub username
+
+I think we should first show readers how to find the "Add Environment Variables" button within CircleCI context, before telling them to configure DockerHub's username and password.
+
+22) 

@@ -1,0 +1,48 @@
+version: 2.1
+
+jobs:
+  build-and-test:
+    docker:
+      - image: cimg/python:3.12.9
+    steps:
+      - checkout
+      # Enable Docker support
+      - setup_remote_docker:
+          docker_layer_caching: true
+      # Install dependencies and run tests
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "requirements.txt" }}
+      - run:
+          name: Install Dependencies
+          command: |
+            python -m venv venv
+            . venv/bin/activate
+            pip install --no-cache-dir -r requirements.txt
+      - save_cache:
+          paths:
+            - ./venv
+          key: v1-dependencies-{{ checksum "requirements.txt" }}
+      - run:
+          name: Run Tests
+          command: |
+            . venv/bin/activate
+            pytest tests/ -v
+      # Docker steps
+      - run:
+          name: Build and Push Docker Image
+          command: |
+            # Print Docker version
+            docker version
+            # Build image
+            docker build -t $DOCKER_USERNAME/churn-prediction:latest .
+            # Login to DockerHub
+            echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+            # Push image
+            docker push $DOCKER_USERNAME/churn-prediction:latest
+workflows:
+  build-test-deploy:
+    jobs:
+      - build-and-test:
+          context: 
+            - docker-hub-creds
