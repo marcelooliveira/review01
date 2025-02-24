@@ -46,5 +46,3 @@ workflows:
       - build-and-test:
           context: 
             - docker-hub-creds
-
-            

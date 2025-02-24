@@ -114,8 +114,7 @@ class FeatureAnalysis:
 
 if __name__ == "__main__":
     # Load processed data
-    df = pd.read_csv('data\processed_telco_data.csv')
-    # df = df.drop(columns='conversation')
+    df = pd.read_csv('./data/processed_telco_data.csv')
     
     # Create analysis object
     analyzer = FeatureAnalysis(df)

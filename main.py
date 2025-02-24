@@ -1,5 +1,6 @@
 # FastAPI app (main.py or app.py)
 from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, Field
 from typing import List, Dict, Union
 # Import predict_churn 
@@ -33,7 +34,24 @@ class CustomerData(BaseModel):
     customer_text: str = None
 class Config:
         allow_population_by_field_name = True
-        
+
+app = FastAPI()
+
+@app.get("/", response_class=HTMLResponse)
+def read_root():
+    return """
+    <html>
+        <head>
+            <title>FastAPI Home</title>
+        </head>
+        <body>
+            <h1>Welcome to FastAPI!</h1>
+            <p>Click below to access the API documentation and test the model predictions:</p>
+            <a href="/docs" style="font-size: 18px; color: blue;">Go to Swagger UI</a>
+        </body>
+    </html>
+    """
+    
 @app.post("/predict")
 async def predict_endpoint(request: Request, data: Union[CustomerData, List[CustomerData], Dict, List[Dict]]): 
     print(data)  # Print the data
